@@ -35,6 +35,19 @@ public class Compte {
     @JsonIgnoreProperties("compte")
     private List<User> users;
 
+    @OneToMany(mappedBy ="compte")
+    //@JsonBackReference
+    @JsonIgnoreProperties("compte")
+    private List <Depots> depots;
+
+    public List<Depots> getDepots() {
+        return depots;
+    }
+
+    public void setDepots(List<Depots> depots) {
+        this.depots = depots;
+    }
+
     public List<User> getUsers() {
         return users;
     }

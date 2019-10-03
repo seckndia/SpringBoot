@@ -10,11 +10,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(exclude = "partenaire")
+@EqualsAndHashCode(exclude = "partenaire,depots")
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "username"
@@ -35,7 +36,7 @@ public class User{
     @NotBlank
     @Size(min=3, max = 50)
     @Column(nullable = false)
-    private String name;
+    private String nom;
 
     @NotBlank
     @Size(min=3, max = 50)
@@ -45,7 +46,7 @@ public class User{
 
 
     @NotBlank
-    @Size(min=6, max = 10)
+
     @Column(nullable = false)
     private String password;
     @Size(min=3, max = 50)
@@ -87,10 +88,23 @@ public class User{
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy ="user")
+    //@JsonBackReference
+    @JsonIgnoreProperties("user")
+    private List<Depots> depots;
+
+    public List<Depots> getDepots() {
+        return depots;
+    }
+
+    public void setDepots(List<Depots> depots) {
+        this.depots = depots;
+    }
+
     public User() {}
 
-    public User(String name, String username,  String password,String tel,String adresse,String cni,String status) {
-        this.name = name;
+    public User(String nom, String username,  String password,String tel,String adresse,String cni,String status) {
+        this.nom = nom;
         this.username = username;
 
         this.password = password;
@@ -99,6 +113,8 @@ public class User{
         this.cni = cni;
         this.status = status;
     }
+
+
 
     public Long getId() {
         return id;
@@ -116,15 +132,13 @@ public class User{
         this.username = username;
     }
 
-    public String getName() {
-        return name;
+    public String getNom() {
+        return nom;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
-
-
 
     public String getPassword() {
         return password;

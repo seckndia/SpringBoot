@@ -18,7 +18,7 @@ import java.util.Set;
 @RestController
 @CrossOrigin
 
-@RequestMapping(value = "/test")
+@RequestMapping(value = "/user")
 public class UserController {
     @Autowired //etape 4
     private UserDetailsServiceImpl userDetailsService;
@@ -28,6 +28,7 @@ public class UserController {
         User user = userDetailsService.getUserconnecte();
         return user;
     }
+
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -38,13 +39,14 @@ public class UserController {
 
     }
 
-    //permet de ajouter des utilisateurs
-    @PostMapping(value = "/add",consumes = {MediaType.APPLICATION_JSON_VALUE})
+    //permet de ajouter des utilisateurs du superadmin
+    @PostMapping(value = "/add")
     @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
-    public User add(@RequestBody(required = false)RegistationUser registationUser){
+
+    public User add(RegistationUser registationUser){
         User u=new User();
         u.setUsername(registationUser.getUsername());
-        u.setName(registationUser.getName());
+        u.setNom(registationUser.getNom());
 
         u.setPassword(encoder.encode(registationUser.getPassword()));
         u.setCni(registationUser.getCni());

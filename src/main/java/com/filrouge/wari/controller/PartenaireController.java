@@ -6,8 +6,12 @@ import com.filrouge.wari.repository.PartenaireRepository;
 import com.filrouge.wari.repository.UserRepository;
 import com.filrouge.wari.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +24,14 @@ import java.util.Set;
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/partenaire")
+
 public class PartenaireController {
     @Autowired
     private PartenaireRepository partenaireRepository;
     @Autowired
     private UserRepository userRepository;
     @GetMapping(value = "/liste")
-    //@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
 //permet de lister les partenaires
     public List<Partenaire> liste(){
         return  partenaireRepository.findAll();
@@ -34,13 +39,13 @@ public class PartenaireController {
     }
     @Autowired
     PasswordEncoder encoder;
-    @Autowired //etape 4
-    private UserDetailsServiceImpl userDetailsService;
+
     @Autowired
     private CompteRepository compteRepository;
-    @PostMapping(value = "/add",consumes = {MediaType.APPLICATION_JSON_VALUE})
-   // @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public  Partenaire add(@RequestBody(required = false) RegistrationPartenaire registrationPartenaire){
+    @PostMapping(value = "/add")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
+    //AJOUT PARTENAIRE
+    public  Partenaire add(RegistrationPartenaire registrationPartenaire){
 
         Partenaire p = new Partenaire();
         p.setEntreprise(registrationPartenaire.getEntreprise());
@@ -67,7 +72,38 @@ public class PartenaireController {
         User u=new User();
 
         u.setUsername(registrationPartenaire.getUsername());
-        u.setName(registrationPartenaire.getName());
+        u.setNom(registrationPartenaire.getNom());
+
+        u.setPassword(encoder.encode(registrationPartenaire.getPassword()));
+        u.setCni(registrationPartenaire.getCni());
+        u.setTel(registrationPartenaire.getTel());
+        u.setAdresse(registrationPartenaire.getAdresse());
+
+        u.setStatus("Activer");
+        Set<Role> roles = new HashSet<>();
+        Role role = new Role();
+        role.setId((long) 3);
+        roles.add(role);
+        u.setRoles(roles);
+        u.setPartenaire(p);
+        u.setCompte(c);
+        userRepository.save(u);
+   return partenaireRepository.save(p);
+
+    }
+
+//add user du partenaie
+
+    @Autowired //etape 4
+    private UserDetailsServiceImpl userDetailsService;
+    @PostMapping(value = "/addUserPart")
+     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+public ResponseEntity<String> addUserPart(RegistrationPartenaire registrationPartenaire){
+
+        User u=new User();
+
+        u.setUsername(registrationPartenaire.getUsername());
+        u.setNom(registrationPartenaire.getNom());
 
         u.setPassword(encoder.encode(registrationPartenaire.getPassword()));
         u.setCni(registrationPartenaire.getCni());
@@ -80,11 +116,12 @@ public class PartenaireController {
         role.setId(registrationPartenaire.getProfil());
         roles.add(role);
         u.setRoles(roles);
-        u.setPartenaire(p);
-        u.setCompte(c);
-        userRepository.save(u);
-   return partenaireRepository.save(p);
+
+        Partenaire partenaire = userDetailsService.getUserconnecte().getPartenaire();
+
+        u.setPartenaire(partenaire);
+
+          userRepository.save(u);
+            return new ResponseEntity<>("Utilisateur Enregistrer", HttpStatus.OK);
     }
-
-
 }

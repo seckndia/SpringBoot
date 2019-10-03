@@ -7,7 +7,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 public class RegistrationPartenaire {
-    private String name;
+    private String nom;
     private String username;
 
     private String password;
@@ -60,12 +60,12 @@ public class RegistrationPartenaire {
         this.partenaire = partenaire;
     }
 
-    public String getName() {
-        return name;
+    public String getNom() {
+        return nom;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public String getUsername() {
