@@ -13,5 +13,7 @@ import java.util.Optional;
 
 public interface CompteRepository  extends JpaRepository<Compte, Integer> {
   // Compte finBy(String numcompt);
-    Compte findByNumCompt(String numcompt);
+   // Compte findByNumCompt(String numcompt);
+
+    Optional<Compte> findCompteByNumCompt(String numCompt);
 }
