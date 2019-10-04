@@ -62,4 +62,27 @@ public class UserController {
 
     }
 
+    //Methode pour bloquer
+    @PutMapping("/bloquerUser/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String update(@PathVariable("id") Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        if (user.getUsername().equals("Cheikh")){
+            return "le Super administrateur ne peut pas être bloqué";
+        }
+        if(user.getStatus().equals("Activer")){
+            user.setStatus("Bloquer");
+            userRepository.saveAndFlush(user);
+            return "UTILISATEUR Bloquer";
+        }else if(user.getStatus().equals("Bloquer")){
+            user.setStatus("Activer");
+
+            userRepository.saveAndFlush(user);
+            return "UTILISATEUR Activer";
+        }
+        return null;
+
+    }
+
+
 }
