@@ -62,7 +62,7 @@ public class UserController {
 
     }
 
-    //Methode pour bloquer
+    //Methode pour bloquer les utilisateurs
     @PutMapping("/bloquerUser/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String update(@PathVariable("id") Long id) {

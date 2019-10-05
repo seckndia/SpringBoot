@@ -30,7 +30,7 @@ public class PartenaireController {
     private PartenaireRepository partenaireRepository;
     @Autowired
     private UserRepository userRepository;
-    @GetMapping(value = "/liste")
+    @GetMapping(value = "/listepart")
     @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
 //permet de lister les partenaires
     public List<Partenaire> liste(){
@@ -124,4 +124,34 @@ public ResponseEntity<String> addUserPart(RegistrationPartenaire registrationPar
           userRepository.save(u);
             return new ResponseEntity<>("Utilisateur Enregistrer", HttpStatus.OK);
     }
+
+    //Methode pour bloquer les Partenaire
+    @PutMapping("/bloquerPart/{id}")
+    @PreAuthorize("hasAuthority('ROLE_SUPERADMIN')")
+    public String update(@PathVariable("id") int id) {
+      Partenaire partenaire =partenaireRepository.findById(id).orElseThrow(
+              () -> new IllegalArgumentException("Invalid Partenaire Id:" + id)
+      );
+    if(partenaire.getStatus().equals("Activer")){
+        partenaire.setStatus("Bloquer");
+        partenaireRepository.saveAndFlush(partenaire);
+        return "Vous etes bloquer";
+    }
+    else {
+        partenaire.setStatus("Activer");
+        partenaireRepository.saveAndFlush(partenaire);
+        return "Vous etes Activer";
+    }
+
+    }
+/*//liste des users du Partenaire
+    @GetMapping(value = "/listeUserPart")
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER')")
+    public List <Partenaire> listePar() throws Exception {
+        User uConnect = userDetailsService.getUserconnecte();
+
+        //List partenaire = partenaireRepository.findPartenaireByCreatedBy(uConnect);
+    List partenaire = partenaireRepository.findPartenaireByCreatedBy(uConnect);
+        return partenaire;
+    }*/
 }

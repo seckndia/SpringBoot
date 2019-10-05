@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,6 +63,15 @@ public class JwtTokenUtil implements Serializable {
         User user =userRepository.findByUsername(subject).orElseThrow(
                 () -> new UsernameNotFoundException("User Not Found with -> username  : "
         ));
+        if(user.getStatus().equals("Bloquer")){
+            return  "vous etes bloquer";
+        }
+        if (user.getPartenaire()!= null && user.getPartenaire().getStatus().equals("Bloquer") ){
+            return "Vous etes bloquer Veillez contacter votre Admin";
+        }
+      /*  if(user.getPartenaire().getStatut().equals("bloqué") && user.getPartenaire()!=null){
+            return  "votre partenaire bloqué";
+        }*/
 
         String auth = null;
         for (Role role: user.getRoles()
